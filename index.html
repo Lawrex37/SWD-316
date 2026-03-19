@@ -1,0 +1,2056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Intro to Software Engineering</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+ 
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@600;700&display=swap');
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: linear-gradient(135deg, #020617, #0F172A);
+  color: #E2E8F0;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* MAIN CARD */
+.quiz-box {
+  background: #020617;
+  width: 95%;
+  max-width: 700px;
+  padding: 34px;
+  border-radius: 20px;
+  box-shadow: 0 20px 45px rgba(14, 165, 233, 0.15);
+  border: 1px solid #1E293B;
+}
+
+/* TITLE */
+h1 {
+  text-align: center;
+  margin-bottom: 14px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: #38BDF8;
+  letter-spacing: 1px;
+}
+
+/* COUNTER */
+.counter {
+  text-align: center;
+  font-size: 13px;
+  color: #94A3B8;
+  margin-bottom: 22px;
+}
+
+/* QUESTION */
+.question {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 22px;
+  line-height: 1.7;
+  color: #F1F5F9;
+}
+
+/* OPTIONS */
+.options button {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  background: #0F172A;
+  border: 1px solid #1E293B;
+  border-radius: 14px;
+  color: #E2E8F0;
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.25s ease;
+}
+
+/* HOVER */
+.options button:hover {
+  border-color: #22D3EE;
+  background: #020617;
+  transform: translateX(4px);
+}
+
+/* CORRECT */
+.options button.correct {
+  background: #022C22;
+  border-color: #10B981;
+  color: #6EE7B7;
+}
+
+/* WRONG */
+.options button.wrong {
+  background: #2C0A0A;
+  border-color: #EF4444;
+  color: #FCA5A5;
+}
+
+/* NAV BUTTONS */
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.nav-buttons button {
+  flex: 1;
+  padding: 14px;
+  background: linear-gradient(135deg, #06B6D4, #3B82F6);
+  border: none;
+  border-radius: 14px;
+  color: #020617;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* NAV HOVER */
+.nav-buttons button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3);
+}
+
+/* DISABLED */
+.nav-buttons button:disabled {
+  background: #1E293B;
+  color: #64748B;
+  cursor: not-allowed;
+}
+
+/* RESTART */
+.restart-btn {
+  margin-top: 26px;
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #22D3EE, #0EA5E9);
+  border: none;
+  border-radius: 14px;
+  color: #020617;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.restart-btn:hover {
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.35);
+}
+
+/* RESULT */
+.result {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 24px;
+  font-weight: 600;
+  color: #38BDF8;
+}
+</style>
+
+</head>
+<body>
+
+
+<div class="quiz-box">
+  <h1>SWD 316 Quiz</h1>
+  <div class="counter" id="counter"></div>
+
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+
+  <div class="nav-buttons">
+    <button id="prevBtn">Previous</button>
+    <button id="nextBtn">Next</button>
+  </div>
+
+  <div class="result" id="result" style="display:none;"></div>
+
+<button class="restart-btn" id="restartBtn" style="display:none;">Restart Quiz</button>
+</div>
+
+<script>
+const quizData = [
+ 
+ {
+q: "Which of the following best defines Software Engineering?",
+o: [
+"The process of writing computer programs",
+"The application of engineering principles to software development",
+"The use of computers to solve problems",
+"The study of programming languages only"
+],
+a: 1
+},
+
+{
+q: "Which phrase is most critical in the definition of Software Engineering?",
+o: [
+"Programming skills",
+"Engineering discipline",
+"Computer usage",
+"Software installation"
+],
+a: 1
+},
+
+{
+q: "Software Engineering differs from traditional programming because it emphasizes:",
+o: [
+"Faster coding",
+"Structured and systematic development",
+"Use of advanced computers",
+"Shorter programs"
+],
+a: 1
+},
+
+{
+q: "The primary need for Software Engineering arises due to:",
+o: [
+"Increase in computer hardware",
+"Complexity of software systems",
+"Availability of programmers",
+"Internet access"
+],
+a: 1
+},
+
+{
+q: "Which of the following is NOT a reason for the need for Software Engineering?",
+o: [
+"Managing large-scale systems",
+"Reducing development cost",
+"Increasing software complexity",
+"Eliminating the need for testing"
+],
+a: 3
+},
+
+{
+q: "Software Engineering helps in:",
+o: [
+"Eliminating all software errors",
+"Reducing complexity and improving maintainability",
+"Removing documentation",
+"Making systems hardware dependent"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a key characteristic of good software?",
+o: [
+"High cost",
+"Complex structure",
+"Reliability",
+"Large size"
+],
+a: 2
+},
+
+{
+q: "Which characteristic ensures software performs its intended function correctly?",
+o: [
+"Portability",
+"Reliability",
+"Usability",
+"Efficiency"
+],
+a: 1
+},
+
+{
+q: "Which characteristic refers to how easy it is for users to interact with software?",
+o: [
+"Reliability",
+"Efficiency",
+"Usability",
+"Maintainability"
+],
+a: 2
+},
+
+{
+q: "Which characteristic allows software to be modified easily?",
+o: [
+"Usability",
+"Maintainability",
+"Reliability",
+"Portability"
+],
+a: 1
+},
+
+{
+q: "Which characteristic ensures software can run on different platforms?",
+o: [
+"Efficiency",
+"Portability",
+"Reliability",
+"Usability"
+],
+a: 1
+},
+
+{
+q: "Software evolution refers to:",
+o: [
+"Writing new programs",
+"Changes in hardware systems",
+"The process of modifying software over time",
+"Deleting old software"
+],
+a: 2
+},
+
+{
+q: "Software evolution is necessary because:",
+o: [
+"Software never works initially",
+"User requirements and environments change",
+"Hardware stops working",
+"Programs become shorter"
+],
+a: 1
+},
+
+{
+q: "Which of the following best describes software evolution?",
+o: [
+"One-time development process",
+"Continuous adaptation and improvement",
+"Only bug fixing",
+"Replacing hardware components"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a major driver of software evolution?",
+o: [
+"Fixed user requirements",
+"Changing business needs",
+"Stable technology",
+"Reduced system usage"
+],
+a: 1
+},
+
+{
+q: "Good software should be efficient. This means:",
+o: [
+"It uses minimal resources effectively",
+"It is always fast regardless of cost",
+"It has many features",
+"It is difficult to modify"
+],
+a: 0
+},
+
+{
+q: "Which of the following combinations best represents good software characteristics?",
+o: [
+"Complexity, cost, size",
+"Reliability, usability, maintainability",
+"Speed, size, difficulty",
+"Hardware dependence, rigidity, cost"
+],
+a: 1
+},
+
+{
+q: "Which statement is TRUE about software engineering?",
+o: [
+"It eliminates the need for testing",
+"It focuses only on coding",
+"It applies systematic approaches to development",
+"It ignores user requirements"
+],
+a: 2
+},
+
+
+
+{
+q: "Which of the following is NOT a fundamental software process activity?",
+o: [
+"Specification",
+"Development",
+"Validation",
+"Compilation"
+],
+a: 3
+},
+
+{
+q: "Software process activities include:",
+o: [
+"Design, Coding, Marketing, Sales",
+"Specification, Development, Validation, Evolution",
+"Planning, Execution, Deletion, Storage",
+"Input, Output, Processing, Storage"
+],
+a: 1
+},
+
+{
+q: "Which activity involves defining what the system should do?",
+o: [
+"Development",
+"Validation",
+"Specification",
+"Evolution"
+],
+a: 2
+},
+
+{
+q: "The generic software process model consists of:",
+o: [
+"Input, Process, Output",
+"Planning, Coding, Testing",
+"Specification, Development, Validation, Evolution",
+"Design, Compile, Execute"
+],
+a: 2
+},
+
+{
+q: "The Waterfall model is best described as:",
+o: [
+"Iterative and flexible",
+"Linear and sequential",
+"Random and unstructured",
+"Parallel development model"
+],
+a: 1
+},
+
+{
+q: "A major limitation of the Waterfall model is:",
+o: [
+"Too flexible",
+"Difficult to accommodate changes",
+"Too fast",
+"Requires no documentation"
+],
+a: 1
+},
+
+{
+q: "The Spiral model primarily focuses on:",
+o: [
+"Speed of development",
+"Risk analysis",
+"User interface design",
+"Code optimization"
+],
+a: 1
+},
+
+{
+q: "Which model combines iterative development with systematic risk management?",
+o: [
+"Waterfall",
+"Spiral",
+"V-Model",
+"RAD"
+],
+a: 1
+},
+
+{
+q: "The V-Model emphasizes:",
+o: [
+"Rapid coding",
+"Testing at each development stage",
+"Skipping documentation",
+"Continuous deployment only"
+],
+a: 1
+},
+
+{
+q: "Which model is best suited for projects requiring quick development?",
+o: [
+"Waterfall",
+"Spiral",
+"RAD",
+"V-Model"
+],
+a: 2
+},
+
+{
+q: "Agile model is best described as:",
+o: [
+"Rigid and structured",
+"Sequential process",
+"Iterative and flexible",
+"Documentation-heavy only"
+],
+a: 2
+},
+
+{
+q: "Which of the following is a key feature of Agile development?",
+o: [
+"Late delivery",
+"Continuous customer involvement",
+"No testing",
+"Fixed requirements"
+],
+a: 1
+},
+
+{
+q: "A software prototype is:",
+o: [
+"The final version of a system",
+"A preliminary version used for testing concepts",
+"A testing tool only",
+"A design document"
+],
+a: 1
+},
+
+{
+q: "Which type of prototype is thrown away after use?",
+o: [
+"Evolutionary prototype",
+"Incremental prototype",
+"Throwaway prototype",
+"Operational prototype"
+],
+a: 2
+},
+
+{
+q: "Which prototype evolves into the final system?",
+o: [
+"Throwaway prototype",
+"Evolutionary prototype",
+"Temporary prototype",
+"Static prototype"
+],
+a: 1
+},
+
+{
+q: "One major advantage of prototyping is:",
+o: [
+"Increases development time",
+"Helps clarify user requirements",
+"Eliminates need for testing",
+"Reduces system flexibility"
+],
+a: 1
+},
+
+{
+q: "A key disadvantage of prototyping is:",
+o: [
+"Improves understanding",
+"May lead to poor system design",
+"Enhances communication",
+"Reduces errors"
+],
+a: 1
+},
+
+{
+q: "Requirements Engineering primarily deals with:",
+o: [
+"Coding the system",
+"Testing the system",
+"Identifying and documenting user needs",
+"Maintaining software"
+],
+a: 2
+},
+
+{
+q: "Which of the following is NOT a requirements engineering activity?",
+o: [
+"Elicitation",
+"Analysis",
+"Specification",
+"Compilation"
+],
+a: 3
+},
+
+{
+q: "Requirements elicitation involves:",
+o: [
+"Coding the system",
+"Gathering requirements from stakeholders",
+"Testing the system",
+"Deleting requirements"
+],
+a: 1
+},
+
+{
+q: "Which activity ensures requirements are correct and consistent?",
+o: [
+"Elicitation",
+"Validation",
+"Specification",
+"Implementation"
+],
+a: 1
+},
+
+{
+q: "Requirements specification refers to:",
+o: [
+"Writing code",
+"Documenting requirements clearly",
+"Testing requirements",
+"Removing requirements"
+],
+a: 1
+},
+
+
+
+{
+q: "Software specification primarily involves:",
+o: [
+"Writing program code",
+"Defining what the system should do",
+"Testing the system",
+"Maintaining software"
+],
+a: 1
+},
+
+{
+q: "Which of the following best describes software specification?",
+o: [
+"Implementation of software",
+"Documentation of system requirements",
+"Debugging process",
+"Design of hardware systems"
+],
+a: 1
+},
+
+{
+q: "The main goal of software specification is to:",
+o: [
+"Develop code faster",
+"Clearly define system requirements",
+"Reduce number of users",
+"Eliminate testing"
+],
+a: 1
+},
+
+{
+q: "Why is software specification important?",
+o: [
+"It replaces coding",
+"It ensures clear understanding between stakeholders",
+"It removes the need for design",
+"It speeds up hardware performance"
+],
+a: 1
+},
+
+{
+q: "A well-written SRS helps to:",
+o: [
+"Increase ambiguity",
+"Reduce misunderstandings",
+"Eliminate documentation",
+"Delay development"
+],
+a: 1
+},
+
+{
+q: "Which of the following is NOT a benefit of an SRS document?",
+o: [
+"Acts as a contract between stakeholders",
+"Provides basis for design",
+"Eliminates need for validation",
+"Helps in project management"
+],
+a: 2
+},
+
+{
+q: "SRS stands for:",
+o: [
+"Software Requirement System",
+"System Requirement Specification",
+"Software Requirements Specification",
+"Software Resource Structure"
+],
+a: 2
+},
+
+{
+q: "Which section of an SRS provides an overview of the system?",
+o: [
+"Introduction",
+"Functional Requirements",
+"Appendix",
+"References"
+],
+a: 0
+},
+
+{
+q: "The Introduction section of an SRS typically includes:",
+o: [
+"Detailed algorithms",
+"Purpose, scope, and definitions",
+"Source code",
+"Testing results"
+],
+a: 1
+},
+
+{
+q: "Which section describes the actual functionalities of the system?",
+o: [
+"Introduction",
+"Functional Requirements",
+"References",
+"Appendix"
+],
+a: 1
+},
+
+{
+q: "Functional requirements specify:",
+o: [
+"How the system performs tasks",
+"What the system should do",
+"Hardware components",
+"User interface colors"
+],
+a: 1
+},
+
+{
+q: "Non-functional requirements describe:",
+o: [
+"System behavior and constraints",
+"Only system inputs",
+"Only outputs",
+"Program code"
+],
+a: 0
+},
+
+{
+q: "Which of the following is a non-functional requirement?",
+o: [
+"User login feature",
+"Data processing function",
+"System performance speed",
+"File upload option"
+],
+a: 2
+},
+
+{
+q: "Which section of SRS includes external documents or sources?",
+o: [
+"Introduction",
+"References",
+"Functional Requirements",
+"Appendix"
+],
+a: 1
+},
+
+{
+q: "The Appendix section in an SRS usually contains:",
+o: [
+"Core system functions",
+"Supporting information and details",
+"User interface design",
+"Test cases only"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a key characteristic of a good SRS?",
+o: [
+"Ambiguous",
+"Incomplete",
+"Clear and unambiguous",
+"Complex and lengthy"
+],
+a: 2
+},
+
+{
+q: "An SRS document serves as a basis for:",
+o: [
+"Coding only",
+"System design and development",
+"Hardware installation",
+"Network configuration"
+],
+a: 1
+},
+
+{
+q: "Which of the following best describes the role of SRS in software development?",
+o: [
+"It replaces design phase",
+"It guides the entire development process",
+"It eliminates user involvement",
+"It focuses only on testing"
+],
+a: 1
+},
+
+{
+q: "Which of the following stakeholders primarily use the SRS document?",
+o: [
+"Only programmers",
+"Only users",
+"Developers, clients, and testers",
+"Only managers"
+],
+a: 2
+},
+
+
+
+
+{
+q: "What is the correct full meaning of SRS?",
+o: [
+"Software Requirement Specification",
+"Software Requirements Specification",
+"System Requirement Specification",
+"Software Resource Specification"
+],
+a: 1
+},
+
+
+{
+q: "Which statement about SRS is TRUE?",
+o: [
+"It contains only one requirement",
+"It documents all system requirements",
+"It is used only after coding",
+"It replaces system design"
+],
+a: 1
+},
+
+{
+q: "The system shall allow users to log in using a username and password. This is an example of:",
+o: [
+"Non-functional requirement",
+"Functional requirement",
+"Hardware requirement",
+"Performance requirement"
+],
+a: 1
+},
+
+{
+q: "The system shall respond to user input within 2 seconds. This is an example of:",
+o: [
+"Functional requirement",
+"Non-functional requirement",
+"Design requirement",
+"Interface requirement"
+],
+a: 1
+},
+
+
+{
+q: "The system shall generate monthly financial reports. This is classified as:",
+o: [
+"Non-functional requirement",
+"Functional requirement",
+"Security requirement",
+"Performance requirement"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a functional requirement?",
+o: [
+"System should be easy to use",
+"System should load within 3 seconds",
+"System shall allow file upload",
+"System should be secure"
+],
+a: 2
+},
+
+{
+q: "Which of the following is a non-functional requirement?",
+o: [
+"User can register an account",
+"System processes transactions",
+"System shall be available 99.9% of the time",
+"User can reset password"
+],
+a: 2
+},
+
+{
+q: "The system shall support up to 1,000 concurrent users. This requirement is:",
+o: [
+"Functional requirement",
+"Non-functional requirement",
+"Interface requirement",
+"Logical requirement"
+],
+a: 1
+},
+
+{
+q: "Which option best distinguishes functional from non-functional requirements?",
+o: [
+"Functional defines quality, non-functional defines behavior",
+"Functional defines what the system does, non-functional defines how well it performs",
+"Functional is optional, non-functional is mandatory",
+"There is no difference"
+],
+a: 1
+},
+
+{
+q: "The system shall provide a search feature for products. This is:",
+o: [
+"Non-functional requirement",
+"Functional requirement",
+"Security requirement",
+"Performance requirement"
+],
+a: 1
+},
+
+{
+q: "The system should have a user-friendly interface. This is:",
+o: [
+"Functional requirement",
+"Non-functional requirement",
+"Processing requirement",
+"Output requirement"
+],
+a: 1
+},
+
+{
+q: "__________ is the type of requirement that focuses on what the system should do, including specific features and operations.",
+o: [
+"Functional requirement",
+"Non-functional requirement",
+"Behavioral requirement",
+"System constraint"
+],
+a: 0
+},
+
+{
+q: "__________ is the type of requirement that focuses on how the system performs, including aspects like speed, security, and usability.",
+o: [
+"Functional requirement",
+"Non-functional requirement",
+"Input requirement",
+"Design requirement"
+],
+a: 1
+},
+
+
+
+{
+q: "Software design primarily focuses on:",
+o: [
+"Writing program code",
+"Defining how the system will be built",
+"Testing the system",
+"Maintaining the system"
+],
+a: 1
+},
+
+{
+q: "Which of the following best describes software design?",
+o: [
+"Specifying requirements",
+"Transforming requirements into a blueprint",
+"Executing the program",
+"Debugging errors"
+],
+a: 1
+},
+
+{
+q: "The main purpose of software design is to:",
+o: [
+"Reduce coding time only",
+"Provide a clear structure for implementation",
+"Eliminate testing",
+"Increase system complexity"
+],
+a: 1
+},
+
+{
+q: "Which of the following is NOT an importance of software design?",
+o: [
+"Improves system quality",
+"Reduces development effort",
+"Eliminates need for requirements",
+"Helps in maintenance"
+],
+a: 2
+},
+
+{
+q: "Software design helps developers to:",
+o: [
+"Skip planning",
+"Understand system structure before coding",
+"Remove documentation",
+"Ignore requirements"
+],
+a: 1
+},
+
+{
+q: "Which stage of design focuses on the overall system architecture?",
+o: [
+"Detailed design",
+"Architectural design",
+"Testing design",
+"Coding design"
+],
+a: 1
+},
+
+{
+q: "Which stage of design focuses on internal details of components?",
+o: [
+"Architectural design",
+"Detailed design",
+"Requirement design",
+"Validation design"
+],
+a: 1
+},
+
+{
+q: "Architectural design defines:",
+o: [
+"Individual algorithms",
+"System structure and components",
+"Test cases",
+"User manuals"
+],
+a: 1
+},
+
+{
+q: "Detailed design focuses on:",
+o: [
+"System overview",
+"Component-level implementation details",
+"Hardware configuration",
+"User requirements"
+],
+a: 1
+},
+
+{
+q: "Which of the following tools is commonly used in software design?",
+o: [
+"Compiler",
+"UML",
+"Debugger",
+"Assembler"
+],
+a: 1
+},
+
+{
+q: "UML stands for:",
+o: [
+"Unified Modeling Language",
+"Universal Machine Language",
+"User Model Logic",
+"Unified Machine Logic"
+],
+a: 0
+},
+
+{
+q: "UML is mainly used for:",
+o: [
+"Writing code",
+"Visualizing system design",
+"Executing programs",
+"Debugging software"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a UML diagram?",
+o: [
+"Flowchart",
+"Use case diagram",
+"Algorithm",
+"Source code"
+],
+a: 1
+},
+
+{
+q: "XML stands for:",
+o: [
+"Extended Markup Language",
+"Extensible Markup Language",
+"Executable Machine Language",
+"Extra Modeling Language"
+],
+a: 1
+},
+
+{
+q: "XML is mainly used for:",
+o: [
+"Design visualization",
+"Data representation and exchange",
+"Writing algorithms",
+"Testing systems"
+],
+a: 1
+},
+
+{
+q: "Which statement best differentiates UML and XML?",
+o: [
+"UML is for coding, XML is for testing",
+"UML is for design modeling, XML is for data representation",
+"UML and XML are the same",
+"XML is for design, UML is for data storage"
+],
+a: 1
+},
+
+{
+q: "Which of the following is TRUE about software design?",
+o: [
+"It comes after coding",
+"It translates requirements into system structure",
+"It replaces testing",
+"It ignores system architecture"
+],
+a: 1
+},
+
+
+
+{
+q: "Which of the following best describes Software Engineering?",
+o: [
+"Writing computer programs",
+"Application of engineering principles to software development",
+"Use of computers in business",
+"Designing hardware systems"
+],
+a: 1
+},
+
+{
+q: "The term 'software crisis' refers to:",
+o: [
+"Lack of computers",
+"Increasing difficulty in developing reliable software",
+"Shortage of programmers",
+"High cost of hardware"
+],
+a: 1
+},
+
+{
+q: "Which of the following is NOT a software process activity?",
+o: [
+"Specification",
+"Development",
+"Validation",
+"Compilation"
+],
+a: 3
+},
+
+{
+q: "Which software model is best suited for projects with changing requirements?",
+o: [
+"Waterfall",
+"Agile",
+"V-Model",
+"Linear model"
+],
+a: 1
+},
+
+{
+q: "The Spiral model is mainly known for:",
+o: [
+"Speed",
+"Risk analysis",
+"Sequential development",
+"Documentation"
+],
+a: 1
+},
+
+{
+q: "Which model emphasizes testing at every stage?",
+o: [
+"Waterfall",
+"V-Model",
+"RAD",
+"Agile"
+],
+a: 1
+},
+
+{
+q: "SRS stands for:",
+o: [
+"Software Requirement Specification",
+"Software Requirements Specification",
+"System Requirement Specification",
+"Software Resource Specification"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a functional requirement?",
+o: [
+"System should be secure",
+"System shall allow user login",
+"System should be fast",
+"System should be reliable"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a non-functional requirement?",
+o: [
+"Generate report",
+"User login",
+"System response time",
+"File upload"
+],
+a: 2
+},
+
+{
+q: "Software design focuses on:",
+o: [
+"What the system should do",
+"How the system will be built",
+"Testing the system",
+"Maintaining the system"
+],
+a: 1
+},
+
+{
+q: "UML is used for:",
+o: [
+"Coding",
+"System visualization",
+"Testing",
+"Debugging"
+],
+a: 1
+},
+
+{
+q: "Which of the following is NOT a characteristic of good software?",
+o: [
+"Reliability",
+"Maintainability",
+"Complexity",
+"Usability"
+],
+a: 2
+},
+
+{
+q: "Software evolution refers to:",
+o: [
+"Initial development",
+"Continuous modification over time",
+"Deleting software",
+"Hardware upgrade"
+],
+a: 1
+},
+
+{
+q: "Prototyping is mainly used to:",
+o: [
+"Replace final system",
+"Understand user requirements",
+"Eliminate coding",
+"Test hardware"
+],
+a: 1
+},
+
+{
+q: "Which type of prototype is discarded after use?",
+o: [
+"Evolutionary",
+"Throwaway",
+"Incremental",
+"Final"
+],
+a: 1
+},
+
+{
+q: "Requirements elicitation involves:",
+o: [
+"Coding",
+"Gathering requirements",
+"Testing",
+"Deployment"
+],
+a: 1
+},
+
+{
+q: "Which stage comes immediately after requirements in development?",
+o: [
+"Testing",
+"Design",
+"Maintenance",
+"Deployment"
+],
+a: 1
+},
+
+{
+q: "Which of the following best defines Agile?",
+o: [
+"Rigid development model",
+"Iterative and flexible approach",
+"Sequential process",
+"No user involvement"
+],
+a: 1
+},
+
+{
+q: "The main goal of software engineering is to:",
+o: [
+"Write long programs",
+"Develop high-quality software efficiently",
+"Reduce number of users",
+"Eliminate documentation"
+],
+a: 1
+},
+
+{
+q: "Which of the following stakeholders use SRS?",
+o: [
+"Only developers",
+"Only users",
+"Developers, testers, and clients",
+"Only managers"
+],
+a: 2
+},
+
+
+
+{
+q: "Software is best defined as:",
+o: [
+"Only computer programs",
+"Programs, procedures, and related documentation",
+"Hardware components of a system",
+"Input and output devices"
+],
+a: 1
+},
+
+{
+q: "Which of the following correctly differentiates software from a program?",
+o: [
+"Software is smaller than a program",
+"A program includes documentation while software does not",
+"Software includes programs and documentation, while a program is just a set of instructions",
+"There is no difference"
+],
+a: 2
+},
+
+{
+q: "A program is:",
+o: [
+"A complete software system",
+"A set of instructions written to perform a task",
+"A hardware component",
+"A database system"
+],
+a: 1
+},
+
+{
+q: "Which of the following is NOT a type of software?",
+o: [
+"System software",
+"Application software",
+"Utility software",
+"Specialized software"
+],
+a: 3
+},
+
+{
+q: "Operating systems belong to which type of software?",
+o: [
+"Application software",
+"System software",
+"Utility software",
+"Programming software"
+],
+a: 1
+},
+
+{
+q: "Which of the following is an example of application software?",
+o: [
+"Compiler",
+"Operating system",
+"Word processor",
+"Assembler"
+],
+a: 2
+},
+
+{
+q: "Utility software is primarily used for:",
+o: [
+"Developing applications",
+"Maintaining and managing system resources",
+"Running user programs",
+"Designing hardware"
+],
+a: 1
+},
+
+{
+q: "Which of the following best describes system software?",
+o: [
+"Software for user-specific tasks",
+"Software that manages hardware and provides a platform for applications",
+"Software used for entertainment",
+"Software used for documentation only"
+],
+a: 1
+},
+
+{
+q: "The history of software engineering is closely linked to:",
+o: [
+"Development of hardware only",
+"Growth in complexity of software systems",
+"Reduction in computer usage",
+"Decline in programming languages"
+],
+a: 1
+},
+
+{
+q: "Software engineering emerged as a discipline in response to:",
+o: [
+"Increase in hardware speed",
+"Software crisis",
+"Development of internet",
+"Growth of databases"
+],
+a: 1
+},
+
+{
+q: "The software crisis refers to:",
+o: [
+"Failure of hardware systems",
+"Inability to develop reliable and maintainable software",
+"Shortage of electricity",
+"Decrease in software demand"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a major problem associated with the software crisis?",
+o: [
+"Slow development",
+"Low cost",
+"Unreliable software",
+"Simple design"
+],
+a: 2
+},
+
+{
+q: "The software crisis led to the development of:",
+o: [
+"Hardware engineering",
+"Software engineering practices",
+"Networking systems",
+"Database systems"
+],
+a: 1
+},
+
+{
+q: "Which statement is TRUE about software?",
+o: [
+"It does not require maintenance",
+"It evolves over time",
+"It is static and unchanging",
+"It depends only on hardware"
+],
+a: 1
+},
+
+{
+q: "Which of the following best describes application software?",
+o: [
+"Manages hardware",
+"Performs specific user tasks",
+"Controls CPU operations",
+"Develops other software"
+],
+a: 1
+},
+
+{
+q: "Which of the following is an example of system software?",
+o: [
+"Spreadsheet",
+"Web browser",
+"Operating system",
+"Media player"
+],
+a: 2
+},
+
+{
+q: "In what year was the term 'Software Engineering' first introduced?",
+o: [
+"1965",
+"1968",
+"1972",
+"1980"
+],
+a: 1
+},
+
+{
+q: "The term 'Software Engineering' was first introduced during:",
+o: [
+"A programming workshop",
+"A NATO conference",
+"A university lecture",
+"A government policy meeting"
+],
+a: 1
+},
+
+{
+q: "Which of the following is an example of a problem that highlighted the software crisis?",
+o: [
+"Y2K problem",
+"Improved user interfaces",
+"Poor internet speed",
+"Development of mobile apps"
+],
+a: 0
+},
+
+
+{
+q: "The Y2K problem is an example of:",
+o: [
+"Hardware failure",
+"Software design limitation",
+"Network error",
+"User interface issue"
+],
+a: 1
+},
+
+{
+q: "Failures of military or defense software systems are often cited as:",
+o: [
+"Examples of hardware limitations",
+"Examples of software crisis",
+"Examples of user errors",
+"Examples of database problems"
+],
+a: 1
+},
+
+
+
+{
+q: "SDLC stands for:",
+o: [
+"Software Development Life Cycle",
+"System Design Life Cycle",
+"Software Design Life Cycle",
+"System Development Life Cycle"
+],
+a: 0
+},
+
+{
+q: "Which phase of SDLC involves gathering user requirements?",
+o: [
+"Design",
+"Implementation",
+"Requirements analysis",
+"Testing"
+],
+a: 2
+},
+
+{
+q: "Which of the following is a method of requirements elicitation?",
+o: [
+"Compilation",
+"Interview",
+"Debugging",
+"Execution"
+],
+a: 1
+},
+
+{
+q: "Which elicitation method involves observing users in their working environment?",
+o: [
+"Interview",
+"Questionnaire",
+"Observation",
+"Prototyping"
+],
+a: 2
+},
+
+{
+q: "A use case diagram is primarily used to:",
+o: [
+"Show database structure",
+"Represent user interactions with the system",
+"Define algorithms",
+"Write program code"
+],
+a: 1
+},
+
+{
+q: "A context diagram shows:",
+o: [
+"Internal processes of a system",
+"The system and its external entities",
+"Database relationships",
+"Program flow"
+],
+a: 1
+},
+
+{
+q: "DFD stands for:",
+o: [
+"Data Flow Diagram",
+"Data File Design",
+"Dynamic Function Diagram",
+"Data Format Design"
+],
+a: 0
+},
+
+{
+q: "ERD is used to represent:",
+o: [
+"Program logic",
+"Data relationships",
+"User interface",
+"System flow"
+],
+a: 1
+},
+
+{
+q: "Module coupling refers to:",
+o: [
+"Internal strength of a module",
+"Degree of interdependence between modules",
+"Speed of execution",
+"Code readability"
+],
+a: 1
+},
+
+{
+q: "Which type of coupling is the best?",
+o: [
+"Content coupling",
+"Common coupling",
+"Data coupling",
+"Control coupling"
+],
+a: 2
+},
+
+{
+q: "Which type of coupling is the worst?",
+o: [
+"Data coupling",
+"Stamp coupling",
+"Control coupling",
+"Content coupling"
+],
+a: 3
+},
+
+{
+q: "Module cohesion refers to:",
+o: [
+"Interdependence between modules",
+"Internal consistency within a module",
+"System performance",
+"Code execution speed"
+],
+a: 1
+},
+
+{
+q: "Which type of cohesion is the best?",
+o: [
+"Functional cohesion",
+"Coincidental cohesion",
+"Logical cohesion",
+"Temporal cohesion"
+],
+a: 0
+},
+
+{
+q: "Which type of cohesion is the worst?",
+o: [
+"Functional cohesion",
+"Sequential cohesion",
+"Coincidental cohesion",
+"Communicational cohesion"
+],
+a: 2
+},
+
+{
+q: "OOP stands for:",
+o: [
+"Object Oriented Programming",
+"Operational Output Processing",
+"Object Output Program",
+"Operational Oriented Process"
+],
+a: 0
+},
+
+{
+q: "Which of the following is a core concept of OOP?",
+o: [
+"Compilation",
+"Encapsulation",
+"Execution",
+"Debugging"
+],
+a: 1
+},
+
+{
+q: "A bug in a program refers to:",
+o: [
+"A hardware failure",
+"An error in the code",
+"A completed task",
+"A user request"
+],
+a: 1
+},
+
+{
+q: "A failure occurs when:",
+o: [
+"Code is written with wrong syntax",
+"System does not perform as expected",
+"Program compiles an error",
+"User logs in"
+],
+a: 1
+},
+
+{
+q: "Verification is concerned with:",
+o: [
+"Building the right product",
+"Building the product right",
+"Testing only",
+"Deployment"
+],
+a: 1
+},
+
+{
+q: "Validation is concerned with:",
+o: [
+"Building the product right",
+"Building the right product",
+"Coding standards",
+"System performance"
+],
+a: 1
+},
+
+{
+q: "Software testing is defined as:",
+o: [
+"Writing code",
+"Executing software to find defects",
+"Designing system",
+"Installing software in Customer/Client computer"
+],
+a: 1
+},
+
+{
+q: "Which type of testing is performed by developers?",
+o: [
+"Acceptance testing",
+"Unit testing",
+"System testing",
+"Beta testing"
+],
+a: 1
+},
+
+{
+q: "Which testing ensures the system meets user requirements?",
+o: [
+"Unit testing",
+"Integration testing",
+"Acceptance testing",
+"Regression testing"
+],
+a: 2
+},
+
+{
+q: "A test case is:",
+o: [
+"A collection of programs",
+"A single set of inputs and expected outputs",
+"A testing tool",
+"A software model"
+],
+a: 1
+},
+
+{
+q: "A test suite is:",
+o: [
+"A single test case",
+"A collection of test cases",
+"A programming language",
+"A testing phase"
+],
+a: 1
+}
+  
+];
+
+let current = 0;
+let score = 0;
+
+// ✅ Pick 60 random questions WITHOUT modifying quizData
+function pickRandomQuestions(bank, count) {
+  const copy = [...bank];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, count);
+}
+
+const examData = pickRandomQuestions(quizData, 60);
+
+let answers = new Array(examData.length).fill(null);
+let shuffledOptions = new Array(examData.length).fill(null);
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const nextBtn = document.getElementById("nextBtn");
+const prevBtn = document.getElementById("prevBtn");
+const counterEl = document.getElementById("counter");
+const resultEl = document.getElementById("result");
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function loadQuestion() {
+  const q = examData[current];
+
+  counterEl.textContent = `Question ${current + 1} of ${examData.length}`;
+  questionEl.innerHTML = q.q;
+  optionsEl.innerHTML = "";
+
+  prevBtn.disabled = current === 0;
+
+  let optionsToRender;
+
+  if (shuffledOptions[current] === null) {
+    optionsToRender = q.o.map((text, index) => ({
+      text,
+      originalIndex: index
+    }));
+
+    shuffleArray(optionsToRender);
+    shuffledOptions[current] = optionsToRender;
+  } else {
+    optionsToRender = shuffledOptions[current];
+  }
+
+  optionsToRender.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.textContent = opt.text;
+
+    if (answers[current] !== null) {
+      btn.disabled = true;
+
+      if (opt.originalIndex === q.a) {
+        btn.classList.add("correct");
+      }
+
+      if (
+        opt.originalIndex === answers[current] &&
+        answers[current] !== q.a
+      ) {
+        btn.classList.add("wrong");
+      }
+    }
+
+    btn.onclick = () => selectAnswer(opt.originalIndex);
+    optionsEl.appendChild(btn);
+  });
+}
+
+function selectAnswer(index) {
+  if (answers[current] !== null) return;
+
+  answers[current] = index;
+  if (index === examData[current].a) score++;
+
+  loadQuestion();
+}
+
+nextBtn.onclick = () => {
+  if (current < examData.length - 1) {
+    current++;
+    loadQuestion();
+  } else {
+    showResult();
+  }
+};
+
+prevBtn.onclick = () => {
+  if (current > 0) {
+    current--;
+    loadQuestion();
+  }
+};
+
+function showResult() {
+  questionEl.style.display = "none";
+  optionsEl.style.display = "none";
+  counterEl.style.display = "none";
+  document.querySelector(".nav-buttons").style.display = "none";
+
+  const percentage = ((score / examData.length) * 100).toFixed(2);
+  resultEl.style.display = "block";
+  restartBtn.style.display ="block";
+
+  resultEl.innerHTML = `
+    <p><strong>Quiz Completed</strong></p>
+    <p>Score: ${score} / ${examData.length}</p>
+    <p>Percentage: ${percentage}%</p>
+  `;
+}
+
+restartBtn.onclick = () => {
+  current = 0;
+  score = 0;
+
+  const newExamData = pickRandomQuestions(quizData, 60);
+  examData.length = 0;
+  examData.push(...newExamData);
+
+  answers = new Array(examData.length).fill(null);
+  shuffledOptions = new Array(examData.length).fill(null);
+
+  questionEl.style.display = "block";
+  optionsEl.style.display = "block";
+  counterEl.style.display = "block";
+  document.querySelector(".nav-buttons").style.display = "flex";
+  resultEl.style.display = "none";
+  restartBtn.style.display = "none";
+
+  prevBtn.disabled = true;
+  nextBtn.disabled = false;
+
+  loadQuestion();
+};
+
+loadQuestion();
+</script>
+
+</body>
+</html>
